@@ -6,20 +6,20 @@
 
 import UIKit
 import Foundation
-import RealmSwift
+import MaterialComponents.MaterialTextControls_FilledTextFields
+import MaterialComponents.MaterialTextControls_OutlinedTextFields
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: UIViewController, UITextFieldDelegate {
     
-    let firstnameField = UITextField()
-    let lastnameField = UITextField()
-    let emailField = UITextField()
-    let passwordField = UITextField()
-    let usernameField = UITextField()
-    let mobilenoField = UITextField()
+    let firstnameField = MDCOutlinedTextField()
+    let lastnameField = MDCOutlinedTextField()
+    let emailField = MDCOutlinedTextField()
+    let passwordField = MDCOutlinedTextField()
+    let usernameField = MDCOutlinedTextField()
+    let mobilenoField = MDCOutlinedTextField()
     let signUpButton = UIButton()
     let errorLabel = UILabel()
     let activityIndicator = UIActivityIndicatorView(style: .medium)
-
     var email: String? {
         get {
             return emailField.text
@@ -34,9 +34,19 @@ class SignUpViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad();
-        view.backgroundColor =  #colorLiteral(red: 0.7882352941, green: 0.8862745098, blue: 0.3960784314, alpha: 1)
+        view.backgroundColor = .secondarySystemBackground
+        passwordField.delegate = self
+        passwordField.returnKeyType = .done
+        usernameField.delegate = self
+        firstnameField.delegate = self
+        lastnameField.delegate = self
+        emailField.delegate = self
+        mobilenoField.delegate = self
         
-
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
         // Create a view that will automatically lay out the other controls.
         let container = UIStackView();
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -62,21 +72,6 @@ class SignUpViewController: UIViewController {
             activityIndicator.centerXAnchor.constraint(equalTo: guide.centerXAnchor),
             ])
 
-        
-        //let imageName = "logo.png"
-        //let image = UIImage(named: imageName)
-        //let imageView = UIImageView(image: image!)
-        //imageView.frame = CGRect(x: 120, y: 100, width: 200, height: 230)
-        //Imageview on Top of View
-        //self.view.addSubview(imageView)
-        //container.addArrangedSubview(imageView)
-        
-        // Add some text at the top of the view to explain what to do.
-        //let infoLabel = UILabel()
-        //infoLabel.numberOfLines = 0
-        //infoLabel.text = "Task Tracker"
-        //infoLabel.textAlignment = .center
-       // container.addArrangedSubview(infoLabel)
 
         // Configure the email and password text input fields.
         let infoLabel = UILabel()
@@ -86,41 +81,40 @@ class SignUpViewController: UIViewController {
         container.addArrangedSubview(infoLabel)
         
         firstnameField.placeholder = "FirstName"
-        firstnameField.borderStyle = .roundedRect
+        firstnameField.label.text = "FirstName"
         firstnameField.autocapitalizationType = .none
         firstnameField.autocorrectionType = .no
         container.addArrangedSubview(firstnameField)
         
         lastnameField.placeholder = "LastName"
-        lastnameField.borderStyle = .roundedRect
+        lastnameField.label.text = "LastName"
         lastnameField.autocapitalizationType = .none
         lastnameField.autocorrectionType = .no
         container.addArrangedSubview(lastnameField)
         
         emailField.placeholder = "E-Mail address"
-        emailField.borderStyle = .roundedRect
+        emailField.label.text = "E-Mail address"
         emailField.autocapitalizationType = .none
         emailField.autocorrectionType = .no
         container.addArrangedSubview(emailField)
         
         usernameField.placeholder = "Username"
-        usernameField.borderStyle = .roundedRect
+        usernameField.label.text = "Username"
         usernameField.autocapitalizationType = .none
         usernameField.autocorrectionType = .no
         container.addArrangedSubview(usernameField)
-
-        passwordField.placeholder = "Password"
-        passwordField.isSecureTextEntry = true
-        passwordField.borderStyle = .roundedRect
-        container.addArrangedSubview(passwordField)
-        
         
         mobilenoField.placeholder = "Mobile no."
-        mobilenoField.borderStyle = .roundedRect
+        mobilenoField.label.text = "Mobile no."
         mobilenoField.autocapitalizationType = .none
         mobilenoField.autocorrectionType = .no
         mobilenoField.keyboardType = .numberPad
         container.addArrangedSubview(mobilenoField)
+
+        passwordField.placeholder = "Password"
+        passwordField.isSecureTextEntry = true
+        passwordField.label.text = "Password"
+        container.addArrangedSubview(passwordField)
         
 
         Utilities.styleFilledButton(signUpButton)
@@ -133,7 +127,42 @@ class SignUpViewController: UIViewController {
         errorLabel.textColor = .red
         container.addArrangedSubview(errorLabel)
     }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if ((notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+            if self.view.frame.origin.y == 0 {
+                self.view.frame.origin.y -= 60
+            }
+        }
+    }
 
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == firstnameField {
+               textField.resignFirstResponder()
+               lastnameField.becomeFirstResponder()
+            }else if textField == lastnameField {
+                textField.resignFirstResponder()
+                emailField.becomeFirstResponder()
+             }else if textField == emailField {
+                textField.resignFirstResponder()
+                usernameField.becomeFirstResponder()
+             }else if textField == usernameField {
+                textField.resignFirstResponder()
+                mobilenoField.becomeFirstResponder()
+             }else if textField == mobilenoField {
+                textField.resignFirstResponder()
+                passwordField.becomeFirstResponder()
+             }else if textField == passwordField {
+               textField.resignFirstResponder()
+            }
+           return true
+          }
     func validateFields() -> String? {
         
         // Check that all fields are filled in
@@ -180,7 +209,7 @@ class SignUpViewController: UIViewController {
         }
             
             //Create Activity Indicator
-        let myActivityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
+        let myActivityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
             
             // Position Activity Indicator in the center of the main view
             myActivityIndicator.center = view.center
@@ -195,7 +224,7 @@ class SignUpViewController: UIViewController {
             
             
             // Send HTTP Request to Register user
-            let myUrl = URL(string: "http://13.232.149.111:8000/signup")
+            let myUrl = URL(string: "https://jedischoolteam3.tk/signup")
             var request = URLRequest(url:myUrl!)
             request.httpMethod = "POST"// Compose a query string
             request.addValue("application/json", forHTTPHeaderField: "content-type")

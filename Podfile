@@ -6,7 +6,11 @@ target 'Task Tracker' do
   use_frameworks!
 
   # Pods for Task Tracker
-  pod 'RealmSwift', '=10.4.0'
   pod 'SwiftKeychainWrapper'
+  pod 'MaterialComponents/TextControls+FilledTextAreas'
+  pod 'MaterialComponents/TextControls+FilledTextFields'
+  pod 'MaterialComponents/TextControls+OutlinedTextAreas'
+  pod 'MaterialComponents/TextControls+OutlinedTextFields'
+  pod 'MaterialComponents/Buttons'
 end
 

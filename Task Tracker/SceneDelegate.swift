@@ -6,12 +6,13 @@
 //
 
 import UIKit
-import RealmSwift
-
-let app = App(id: "tasktracker-qczfq")
+import SwiftKeychainWrapper
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
+    let accessToken: String? = KeychainWrapper.standard.string(forKey: "accessToken")
+    let refreshToken: String? = KeychainWrapper.standard.string(forKey: "refeshToken")
+    
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -20,10 +21,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
  
         guard let windowScene = (scene as? UIWindowScene) else { return }
-               
+        if(accessToken != nil) {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: WelcomeViewController())
+        window?.rootViewController = UINavigationController(rootViewController: TaskViewController())
+            print(refreshToken)
+            print(accessToken)
+        }
+        else {
+            window = UIWindow(windowScene: windowScene)
+            window?.makeKeyAndVisible()
+            window?.rootViewController = UINavigationController(rootViewController: WelcomeViewController())
+            print(refreshToken)
+            print(accessToken)
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
