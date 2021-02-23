@@ -11,7 +11,7 @@ An iOS application to maintain and analyse task progress.
 - Task status management
 - Sorts and filters
 
-[Backend (APIs) sourcecode] (https://github.com/arnab01/TaskManager) 
+[Backend (APIs) sourcecode](https://github.com/arnab01/TaskManager) 
 
 #### To run:
 
